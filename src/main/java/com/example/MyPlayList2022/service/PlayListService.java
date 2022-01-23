@@ -1,6 +1,7 @@
 package com.example.MyPlayList2022.service;
 
 import com.example.MyPlayList2022.shared.PlayListDto;
+import com.example.MyPlayList2022.ui.request.NewVideo;
 
 public interface PlayListService {
 
@@ -8,6 +9,6 @@ public interface PlayListService {
 
 	PlayListDto getPlayList(String id);
 
-//	PlayListDto addNewVideo(String id, PlayListDto playListDto);
+	boolean addNewVideo(String id, NewVideo newVideoDetails);
 
 }

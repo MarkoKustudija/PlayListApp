@@ -13,4 +13,9 @@ public interface VideoRepository extends JpaRepository<VideoEntity, Long> {
 
 	VideoEntity findByVideoId(String videoId);
 
+	VideoEntity findByName(String name);
+	
+	
+
+
 }

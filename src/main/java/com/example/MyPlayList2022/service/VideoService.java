@@ -12,7 +12,7 @@ public interface VideoService {
 
 	VideoDto deleteVideo(String videoId);
 
-	List<VideoDto> getVideos();
+	boolean addNewVideo(String name);
 
 
 }

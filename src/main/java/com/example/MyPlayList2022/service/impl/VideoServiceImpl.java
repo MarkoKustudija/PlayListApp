@@ -7,12 +7,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.MyPlayList2022.io.entity.NewVideoEntity;
 import com.example.MyPlayList2022.io.entity.PlayListEntity;
 import com.example.MyPlayList2022.io.entity.VideoEntity;
+import com.example.MyPlayList2022.io.repository.NewVideoRepository;
 import com.example.MyPlayList2022.io.repository.PlayListRepository;
 import com.example.MyPlayList2022.io.repository.VideoRepository;
 import com.example.MyPlayList2022.service.VideoService;
 import com.example.MyPlayList2022.shared.VideoDto;
+import com.example.MyPlayList2022.shared.utils.Utils;
 
 @Service
 public class VideoServiceImpl implements VideoService {
@@ -22,7 +25,45 @@ public class VideoServiceImpl implements VideoService {
 	
 	@Autowired
 	PlayListRepository playListRepository;
+	
+	@Autowired
+	NewVideoRepository newVideoRepository;
+	
+	@Autowired
+	Utils utils;
+	
+	@Override
+	public boolean addNewVideo(String name) {
+		
+		boolean returnValue = false;
+		
+		ModelMapper modelMapper = new ModelMapper();
+		VideoEntity videoEntity = videoRepository.findByName(name);
+		
+		if(videoEntity != null)
+			throw new IllegalStateException("Record already exist!");
+		
+		VideoEntity newVideo = new VideoEntity();
+		newVideo.setName(name);
 
+		PlayListEntity playListEntity = new PlayListEntity();
+		modelMapper.map(newVideo, playListEntity);
+		
+	    playListEntity.setPlaylistId(utils.generatePlayListId(30));
+	    
+	    playListRepository.save(playListEntity);
+		
+		NewVideoEntity newVideoEntity = new NewVideoEntity();
+		newVideoEntity.setName(name);
+		newVideoEntity.setPlayList(playListEntity);;
+		
+		newVideoRepository.save(newVideoEntity);
+		
+	
+		return returnValue;
+	}
+	
+	
 	@Override
 	public List<VideoDto> getVideosFromPlayList(String id) {
 		
@@ -43,11 +84,6 @@ public class VideoServiceImpl implements VideoService {
 		return returnValue;
 	}
 
-//	@Override
-//	public VideoDto addNewVideo(String id, VideoDto videoDto) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 	@Override
 	public VideoDto updateVideo(String videoId,VideoDto videoDto) {
@@ -60,7 +96,6 @@ public class VideoServiceImpl implements VideoService {
 		
 		ModelMapper modelMapper = new ModelMapper();
 		
-//		videoEntity.setId(videoDto.getId());
 		videoEntity.setName(videoDto.getName());
 		
 		VideoEntity savedVideo = videoRepository.save(videoEntity);
@@ -87,21 +122,7 @@ public class VideoServiceImpl implements VideoService {
 			
 		return returnValue;
 	}
-
-	@Override
-	public List<VideoDto> getVideos() {
-
-		List<VideoDto> returnValue = new ArrayList<>();
-		Iterable<VideoEntity> videos = videoRepository.findAll();
+	
 		
-		for(VideoEntity videoEntity : videos) {
-			VideoDto videoDto = new VideoDto();
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.map(videoEntity, videoDto);
-			returnValue.add(videoDto);
-		}
-		
-		return returnValue;
-	}
 
 }
